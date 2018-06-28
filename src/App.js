@@ -18,7 +18,20 @@ const handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
 }
 
 class App extends Component {
-    state = {boardData: {lanes: []}}
+    state = {boardData: {lanes: []},pipelineData:{pipelinelanes:[]}}
+
+    handleDragStart = (cardId, laneId) => {
+        console.log('drag started')
+        console.log(`cardId: ${cardId}`)
+        console.log(`laneId: ${laneId}`)
+    }
+
+    handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
+    console.log('drag ended')
+    console.log(`cardId: ${cardId}`)
+    console.log(`sourceLaneId: ${sourceLaneId}`)
+    console.log(`targetLaneId: ${targetLaneId}`)
+    }
 
     setEventBus = eventBus => {
         this.setState({eventBus})
@@ -26,7 +39,12 @@ class App extends Component {
 
     async componentWillMount() {
         const response = await this.getBoard()
+        console.log(response)
+        //console.log(response.pipelinelanes)
+        
         this.setState({boardData: response})
+        
+        //this.setState({pipelineData: response.pipelinelanes})
     }
 
     getBoard() {
@@ -69,23 +87,33 @@ class App extends Component {
                     <h3>React Trello Demo</h3>
                 </div>
                 <div className="App-intro">
-                    <button onClick={this.completeCard} style={{margin: 5}}>
-                        Complete Buy Milk
-                    </button>
-                    <button onClick={this.addCard} style={{margin: 5}}>
-                        Add Blocked
-                    </button>
-                    <Board
+                 <Board
+                        onCardClick={(cardId, metadata, laneId) => alert(`Card with id:${cardId} clicked. Card in lane: ${laneId}`)}
                         editable
-												onCardAdd={this.handleCardAdd}
+						onCardAdd={this.handleCardAdd}                  
+                        id="EditableBoard1"
+                        data={this.state.pipelineData}
+                        draggable
+                        onDataChange={this.shouldReceiveNewData}
+                        eventBusHandle={this.setEventBus}
+                        handleDragStart={this.handleDragStart.bind(this)}
+                        handleDragEnd={this.handleDragEnd.bind(this)}
+                    />
+                    <Board
+                        onCardClick={(cardId, metadata, laneId) => alert(`Card with id:${cardId} clicked. Card in lane: ${laneId}`)}
+                        editable
+						onCardAdd={this.handleCardAdd}                  
+                        id="EditableBoard1"
                         data={this.state.boardData}
                         draggable
                         onDataChange={this.shouldReceiveNewData}
                         eventBusHandle={this.setEventBus}
-                        handleDragStart={handleDragStart}
-                        handleDragEnd={handleDragEnd}
+                        handleDragStart={this.handleDragStart.bind(this)}
+                        handleDragEnd={this.handleDragEnd.bind(this)}
                     />
                 </div>
+                
+
             </div>
         )
     }
